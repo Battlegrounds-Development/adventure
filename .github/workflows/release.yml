@@ -1,0 +1,57 @@
+name: Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    if: "!contains(github.event.head_commit.message, 'chore(release)')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Bump Version and Tag
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          npx commit-and-tag-version --skip.commit --skip.tag \
+            --types '[
+              {"type":"feat","section":"Features"},
+              {"type":"fix","section":"Bug Fixes"},
+              {"type":"build","section":"Maintenance"},
+              {"type":"refactor","section":"Refactoring"},
+              {"type":"wip","section":"Work in Progress","hidden":false}
+            ]'
+
+          NEW_VERSION=$(grep -m1 '## \[' CHANGELOG.md | sed 's/## \[\(.*\)\].*/\1/')
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          mvn -q versions:set -DnewVersion="$NEW_VERSION" -DgenerateBackupPoms=false
+
+          git add pom.xml CHANGELOG.md
+          git commit -m "chore(release): $NEW_VERSION"
+          git tag -a "v$NEW_VERSION" -m "chore(release): $NEW_VERSION"
+          git push --follow-tags origin main
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ env.NEW_VERSION }}"
+          generate_release_notes: true
