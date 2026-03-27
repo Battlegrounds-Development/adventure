@@ -1,6 +1,8 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [1.1.1](https://github.com/Battlegrounds-Development/adventure/compare/v1.1.0...v1.1.1) (2026-03-27)
 
 ## [1.1.0](https://github.com/Battlegrounds-Development/adventure/compare/v1.0.0...v1.1.0) (2026-02-20)
 
