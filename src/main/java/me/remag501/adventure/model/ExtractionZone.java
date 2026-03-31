@@ -1,6 +1,6 @@
 package me.remag501.adventure.model;
 
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

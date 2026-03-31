@@ -5,7 +5,7 @@ import me.remag501.adventure.model.WeatherModel;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.weather.BlizzardWeather;
 import me.remag501.adventure.weather.WeatherEffect;
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 

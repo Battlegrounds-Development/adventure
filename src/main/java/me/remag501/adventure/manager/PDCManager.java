@@ -1,6 +1,6 @@
 package me.remag501.adventure.manager;
 
-import me.remag501.bgscore.api.namespace.NamespaceService;
+import me.remag501.core.api.namespace.NamespaceService;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;

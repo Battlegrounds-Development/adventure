@@ -6,7 +6,7 @@ import me.remag501.adventure.model.WorldInfo;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
 import me.remag501.adventure.util.SkullUtil;
-import me.remag501.bgscore.api.namespace.NamespaceService;
+import me.remag501.core.api.namespace.NamespaceService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

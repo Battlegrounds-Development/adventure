@@ -10,11 +10,11 @@ import me.remag501.adventure.placeholder.BGSExpansion;
 import me.remag501.adventure.setting.AdventureSettings;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.task.BroadcastTask;
-import me.remag501.bgscore.api.BGSApi;
-import me.remag501.bgscore.api.command.CommandService;
-import me.remag501.bgscore.api.event.EventService;
-import me.remag501.bgscore.api.namespace.NamespaceService;
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.BGSApi;
+import me.remag501.core.api.command.CommandService;
+import me.remag501.core.api.event.EventService;
+import me.remag501.core.api.namespace.NamespaceService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.Bukkit;
