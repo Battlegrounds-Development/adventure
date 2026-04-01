@@ -1,6 +1,7 @@
 package me.remag501.adventure;
 
 import me.remag501.adventure.command.AdventureCommand;
+import me.remag501.adventure.command.AdventureTabCompleter;
 import me.remag501.adventure.listener.BroadcastListener;
 import me.remag501.adventure.listener.ExtractionListener;
 import me.remag501.adventure.listener.GuiListener;
@@ -69,6 +70,7 @@ public class AdventurePlugin extends JavaPlugin {
         // Register commands
         AdventureCommand adventureCommand = new AdventureCommand(this, pdcManager, rotationManager, guiManager);
         getCommand("adventure").setExecutor(adventureCommand);
+        getCommand("adventure").setTabCompleter(new AdventureTabCompleter(rotationManager));
         commandService.registerSubcommand("adventure", adventureCommand);
 
         // Register Listener
