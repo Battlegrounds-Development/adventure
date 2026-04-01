@@ -30,6 +30,7 @@ public class AdventurePlugin extends JavaPlugin {
     private ExtractionManager extractionManager;
     private PenaltyManager penaltyManager;
     private WeatherManager weatherManager;
+    private WorldBorderManager worldBorderManager;
     private BroadcastTask broadcastTask;
     private PDCManager pdcManager;
 
@@ -59,6 +60,7 @@ public class AdventurePlugin extends JavaPlugin {
         // Managers that need Rotation (Workers)
         this.broadcastTask = new BroadcastTask(taskService, rotationManager, settings);
         this.weatherManager = new WeatherManager(taskService, provider);
+        this.worldBorderManager = new WorldBorderManager(taskService, rotationManager, extractionManager, provider);
 
         // Complex Managers (Controllers)
         this.penaltyManager = new PenaltyManager(taskService, pdcManager, broadcastTask, provider);
@@ -98,6 +100,7 @@ public class AdventurePlugin extends JavaPlugin {
         // Change to update managers instead
         rotationManager.reloadSettings();
         weatherManager.reload();
+        worldBorderManager.reload();
 
     }
 
