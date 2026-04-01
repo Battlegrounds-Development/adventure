@@ -43,6 +43,7 @@ public class GuiManager {
             String currentWorld = rotationTrack.getCurrentWorld().getGuiName();
             String nextWorld = rotationTrack.getNextWorld().getGuiName();
             long minutesLeft = rotationTrack.getMinutesUntilNextCycle();
+            boolean entryOpen = rotationManager.isEntryOpen(rotationTrack);
 
             // --- Teleport Item ---
             WorldInfo currentInfo = rotationTrack.getCurrentWorld();
@@ -50,6 +51,11 @@ public class GuiManager {
             int tpSlot = rotationTrack.getGui().getTeleportSlot();
             String tpName = rotationTrack.getGui().getTeleportName()
                     .replace("%current_world%", currentWorld);
+
+            // Update teleport name if entry is closed
+            if (!entryOpen) {
+                tpName = tpName.replace("&a", "&c").replace("&b", "&c").replace("&e", "&c") + " &7(Closed)";
+            }
 
             List<String> tpLore = rotationTrack.getCurrentWorld().getLore()
                     .stream()
@@ -83,9 +89,15 @@ public class GuiManager {
                     .map(MessageUtil::color)
                     .collect(Collectors.toList());
 
-            ItemStack clockItem = new ItemStack(Material.CLOCK);
+            // Use different material if entry is closed
+            Material clockMaterial = entryOpen ? Material.CLOCK : Material.REDSTONE_BLOCK;
+            ItemStack clockItem = new ItemStack(clockMaterial);
             ItemMeta clockMeta = clockItem.getItemMeta();
-            clockMeta.setDisplayName(MessageUtil.color(infoName));
+            String clockName = infoName;
+            if (!entryOpen) {
+                clockName = "&cEntry Closed";
+            }
+            clockMeta.setDisplayName(MessageUtil.color(clockName));
             clockMeta.setLore(infoLore);
             clockItem.setItemMeta(clockMeta);
 
