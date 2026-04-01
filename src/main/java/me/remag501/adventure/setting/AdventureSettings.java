@@ -21,6 +21,7 @@ public class AdventureSettings {
     private final int warnMinutes;
     private final String warnMessage;
     private final String newMapMessage;
+    private final String entryClosedMessage;
 
     // Penalty
     private final String penaltyMessage;
@@ -53,6 +54,22 @@ public class AdventureSettings {
 
     // Weather
     private final List<WeatherModel> weatherModels = new ArrayList<>();
+
+    // World border
+    private final boolean worldBorderEnabled;
+    private final double worldBorderStartSize;
+    private final double worldBorderFinalSize;
+    private final int worldBorderMoveSeconds;
+    private final int worldBorderPauseSeconds;
+    private final double worldBorderMoveAmount;
+    private final List<Double> worldBorderStartCoordinate;
+    private final int worldBorderWarningSeconds;
+    private final double worldBorderProgressiveStep;
+    private final double worldBorderProgressiveMax;
+    private final boolean worldBorderTrajectoryLog;
+    private final String worldBorderWarningMessage;
+    private final String worldBorderMoveMessage;
+    private final String worldBorderFinalPushMessage;
 
     public AdventureSettings(FileConfiguration config) {
         // --- Rotation ---
@@ -110,6 +127,7 @@ public class AdventureSettings {
         this.warnMinutes = config.getInt("broadcast.warn-minutes");
         this.warnMessage = color(config.getString("broadcast.warn-message"));
         this.newMapMessage = color(config.getString("broadcast.new-map-message"));
+        this.entryClosedMessage = color(config.getString("broadcast.entry-closed-message", "&cEntry is closed for this map."));
         this.penaltyMessage = color(config.getString("penalty.message"));
         this.penaltySound = config.getString("penalty.sound");
 
@@ -174,6 +192,22 @@ public class AdventureSettings {
                     (int) entry.get("max_frequency")
             ));
         }
+
+        // --- World Border ---
+        this.worldBorderEnabled = config.getBoolean("world-border.enabled", true);
+        this.worldBorderStartSize = Math.max(1.0, config.getDouble("world-border.start-size", 350.0));
+        this.worldBorderFinalSize = Math.max(1.0, config.getDouble("world-border.final-size", 1.0));
+        this.worldBorderMoveSeconds = Math.max(1, config.getInt("world-border.move-seconds", 20));
+        this.worldBorderPauseSeconds = Math.max(0, config.getInt("world-border.pause-seconds", 10));
+        this.worldBorderMoveAmount = Math.max(0.01, config.getDouble("world-border.move-amount", 2.0));
+        this.worldBorderStartCoordinate = toDoubleList(config.get("world-border.start-coordinate"));
+        this.worldBorderWarningSeconds = Math.max(0, config.getInt("world-border.warning-seconds", 8));
+        this.worldBorderProgressiveStep = Math.max(0.0, config.getDouble("world-border.progressive-step", 0.25));
+        this.worldBorderProgressiveMax = Math.max(1.0, config.getDouble("world-border.progressive-max", 3.0));
+        this.worldBorderTrajectoryLog = config.getBoolean("world-border.trajectory-log", true);
+        this.worldBorderWarningMessage = color(config.getString("world-border.warning-message", "&e[Adventure] Border starts moving in &c%seconds%s &ein &e%map%&e."));
+        this.worldBorderMoveMessage = color(config.getString("world-border.move-message", "&6[Adventure] Border is moving in &e%map%&6."));
+        this.worldBorderFinalPushMessage = color(config.getString("world-border.final-push-message", "&c[Adventure] Final collapse has started in &e%map%&c!"));
     }
 
     private ExtractionZone parseZone(String worldName, Map<?, ?> map) {
@@ -234,6 +268,10 @@ public class AdventureSettings {
 
     public String getNewMapMessage() {
         return newMapMessage;
+    }
+
+    public String getEntryClosedMessage() {
+        return entryClosedMessage;
     }
 
     public String getPenaltyMessage() {
@@ -318,6 +356,62 @@ public class AdventureSettings {
 
     public Map<String, RotationTrack> getTracks() {
         return tracks;
+    }
+
+    public boolean isWorldBorderEnabled() {
+        return worldBorderEnabled;
+    }
+
+    public double getWorldBorderStartSize() {
+        return worldBorderStartSize;
+    }
+
+    public double getWorldBorderFinalSize() {
+        return worldBorderFinalSize;
+    }
+
+    public int getWorldBorderMoveSeconds() {
+        return worldBorderMoveSeconds;
+    }
+
+    public int getWorldBorderPauseSeconds() {
+        return worldBorderPauseSeconds;
+    }
+
+    public double getWorldBorderMoveAmount() {
+        return worldBorderMoveAmount;
+    }
+
+    public List<Double> getWorldBorderStartCoordinate() {
+        return worldBorderStartCoordinate;
+    }
+
+    public int getWorldBorderWarningSeconds() {
+        return worldBorderWarningSeconds;
+    }
+
+    public double getWorldBorderProgressiveStep() {
+        return worldBorderProgressiveStep;
+    }
+
+    public double getWorldBorderProgressiveMax() {
+        return worldBorderProgressiveMax;
+    }
+
+    public boolean isWorldBorderTrajectoryLog() {
+        return worldBorderTrajectoryLog;
+    }
+
+    public String getWorldBorderWarningMessage() {
+        return worldBorderWarningMessage;
+    }
+
+    public String getWorldBorderMoveMessage() {
+        return worldBorderMoveMessage;
+    }
+
+    public String getWorldBorderFinalPushMessage() {
+        return worldBorderFinalPushMessage;
     }
 
 }

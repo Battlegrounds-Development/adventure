@@ -5,7 +5,7 @@ import me.remag501.adventure.setting.AdventureSettings;
 import me.remag501.adventure.model.RotationTrack;
 import me.remag501.adventure.model.WorldInfo;
 import me.remag501.adventure.setting.SettingsProvider;
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.World;
 
 import java.util.*;
@@ -62,5 +62,15 @@ public class RotationManager {
 
     public Collection<RotationTrack> getTracks() {
         return tracks.values();
+    }
+
+    public boolean isEntryOpen(RotationTrack track) {
+        if (track == null) return false;
+        long warnSeconds = settingsProvider.getSettings().getWarnMinutes() * 60L;
+        return track.getSecondsUntilNextCycle() > warnSeconds;
+    }
+
+    public boolean isEntryOpen(String trackId) {
+        return isEntryOpen(getTrackById(trackId));
     }
 }

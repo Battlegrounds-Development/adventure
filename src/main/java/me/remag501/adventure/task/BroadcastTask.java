@@ -7,7 +7,7 @@ import me.remag501.adventure.manager.RotationManager;
 import me.remag501.adventure.model.RotationTrack;
 import me.remag501.adventure.model.WorldInfo;
 import me.remag501.adventure.util.MessageUtil;
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.boss.BarColor;

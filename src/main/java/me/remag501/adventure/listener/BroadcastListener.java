@@ -2,7 +2,7 @@ package me.remag501.adventure.listener;
 
 import me.remag501.adventure.manager.RotationManager;
 import me.remag501.adventure.model.RotationTrack;
-import me.remag501.bgscore.api.event.EventService;
+import me.remag501.core.api.event.EventService;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;

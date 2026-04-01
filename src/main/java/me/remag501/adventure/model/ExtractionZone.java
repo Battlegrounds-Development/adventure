@@ -1,6 +1,6 @@
 package me.remag501.adventure.model;
 
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -210,6 +210,32 @@ public class ExtractionZone {
 
     public String getWorld() {
         return world;
+    }
+
+    public int getMinX() {
+        return minX;
+    }
+
+    public int getMaxX() {
+        return maxX;
+    }
+
+    public int getMinZ() {
+        return minZ;
+    }
+
+    public int getMaxZ() {
+        return maxZ;
+    }
+
+    public Location getCenterLocation() {
+        World w = Bukkit.getWorld(world);
+        if (w == null) return null;
+
+        double centerX = (minX + maxX) / 2.0;
+        double centerY = (minY + maxY) / 2.0;
+        double centerZ = (minZ + maxZ) / 2.0;
+        return new Location(w, centerX, centerY, centerZ);
     }
 
     public List<Location> getPortalGateBlocks() {

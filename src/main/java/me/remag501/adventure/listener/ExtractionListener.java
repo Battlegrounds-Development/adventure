@@ -7,8 +7,8 @@ import me.remag501.adventure.model.ExtractionZone;
 import me.remag501.adventure.model.RotationTrack;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
-import me.remag501.bgscore.api.event.EventService;
-import me.remag501.bgscore.api.task.TaskService;
+import me.remag501.core.api.event.EventService;
+import me.remag501.core.api.task.TaskService;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -54,7 +54,8 @@ public class ExtractionListener {
         RotationTrack track = rotationManager.getTrackByWorld(player.getWorld());
         if (track == null) return false;
 
-        return player.getWorld().getName().equals(track.getCurrentWorld().getId());
+//        return player.getWorld().getName().equals(track.getCurrentWorld().getId());
+        return true; // allows extraction zones to work across all worlds in the rotation, not just the current one
     }
 
     private void handleMove(PlayerMoveEvent event) {
@@ -269,7 +270,7 @@ public class ExtractionListener {
         if (world == null) return;
 
         world.getChunkAtAsync(beaconLoc.getBlockX() >> 4, beaconLoc.getBlockZ() >> 4, false, chunk -> {
-            taskService.delay(0, () -> {
+            taskService.delay(1, () -> {
                 beaconLoc.clone().add(0, 1, 0).getBlock().setType(glassType1, false);
                 beaconLoc.clone().add(0, 2, 0).getBlock().setType(glassType2, false);
             });

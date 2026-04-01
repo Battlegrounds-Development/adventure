@@ -43,7 +43,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>{project.name}-${project.version}</finalName>
+                            <finalName>${project.name}-${project.version}</finalName>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                         </configuration>
@@ -97,8 +97,8 @@
         </dependency>
         <dependency>
             <groupId>me.remag501</groupId>
-            <artifactId>bgscore</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>core</artifactId>
+            <version>[1.0, 3.0)</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

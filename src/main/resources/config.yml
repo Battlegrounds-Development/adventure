@@ -62,10 +62,27 @@ broadcast:
   warn-minutes: 1 # Broadcast this many minutes before rotation
   warn-message: "&e[Adventure] Map &a%current_map% &ecloses in &c%minutes% &eminutes!."
   new-map-message: "&a[Adventure] New map is now open: &b%current_map%!"
+  entry-closed-message: "&cEntry is closed for this map. Wait for the next rotation."
 
 penalty:
   message: "&cThe map has collapsed! You are consumed by darkness..."
   sound: "ENTITY_WITHER_SPAWN" # Any Bukkit sound name
+
+world-border:
+  enabled: true
+  start-size: 350.0
+  start-coordinate: [0, 0, 0]
+  final-size: 1.0
+  move-seconds: 20
+  pause-seconds: 10
+  move-amount: 2.0
+  warning-seconds: 8
+  progressive-step: 0.25
+  progressive-max: 3.0
+  trajectory-log: true
+  warning-message: "&e[Adventure] Border starts moving in &c%seconds%s &ein &e%map%&e."
+  move-message: "&6[Adventure] Border is moving in &e%map%&6."
+  final-push-message: "&c[Adventure] Final border collapse has started in &e%map%&c!"
 
 extraction:
   duration: 5 # seconds to stand in zone

@@ -4,6 +4,7 @@ import me.remag501.adventure.AdventurePlugin;
 import me.remag501.adventure.manager.GuiManager;
 import me.remag501.adventure.manager.PDCManager;
 import me.remag501.adventure.manager.RotationManager;
+import me.remag501.adventure.model.RotationTrack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -48,8 +49,20 @@ public class AdventureCommand implements CommandExecutor {
             String trackName = args[1];
             String playerName = args[2];
 
+            RotationTrack track = rotationManager.getTrackById(trackName);
+            if (track == null) {
+                sender.sendMessage("Track not found: " + trackName);
+                return true;
+            }
+
+            // Block entry if outside entry window
+            if (!rotationManager.isEntryOpen(track)) {
+                sender.sendMessage("Entry is closed for this track. Cannot teleport " + playerName + ".");
+                return true;
+            }
+
             // Handle teleport logic
-            String currentWorld = rotationManager.getTrackById(trackName).getCurrentWorld().getId();
+            String currentWorld = track.getCurrentWorld().getId();
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp player " + playerName + " " + currentWorld);
             pdcManager.syncPlayerToWorld(Bukkit.getPlayer(playerName), Bukkit.getWorld(currentWorld));
 
