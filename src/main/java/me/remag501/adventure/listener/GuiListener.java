@@ -18,11 +18,13 @@ public class GuiListener {
     private final RotationManager rotationManager;
     private final PDCManager pdcManager;
     private final NamespaceService namespaceService;
+    private final SettingsProvider settingsProvider;
 
     public GuiListener(EventService eventService, NamespaceService namespaceService, PDCManager pdcManager, RotationManager rotationManager, SettingsProvider provider) {
         this.pdcManager = pdcManager;
         this.rotationManager = rotationManager;
         this.namespaceService = namespaceService;
+        this.settingsProvider = provider;
 
         eventService.subscribe(InventoryClickEvent.class)
                 // Filter: Only handle clicks in our specific GUI
@@ -47,6 +49,12 @@ public class GuiListener {
 
             for (RotationTrack rotationTrack : rotationManager.getTracks()) {
                 if (actionId.equals(rotationTrack.getId())) {
+                    if (!rotationManager.isEntryOpen(rotationTrack)) {
+                        player.sendMessage(settingsProvider.getSettings().getEntryClosedMessage());
+                        player.closeInventory();
+                        break;
+                    }
+
                     String currentWorld = rotationTrack.getCurrentWorld().getId();
 
                     // Teleport and Sync

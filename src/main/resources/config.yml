@@ -62,6 +62,7 @@ broadcast:
   warn-minutes: 1 # Broadcast this many minutes before rotation
   warn-message: "&e[Adventure] Map &a%current_map% &ecloses in &c%minutes% &eminutes!."
   new-map-message: "&a[Adventure] New map is now open: &b%current_map%!"
+  entry-closed-message: "&cEntry is closed for this map. Wait for the next rotation."
 
 penalty:
   message: "&cThe map has collapsed! You are consumed by darkness..."

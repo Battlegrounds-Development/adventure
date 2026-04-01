@@ -63,4 +63,14 @@ public class RotationManager {
     public Collection<RotationTrack> getTracks() {
         return tracks.values();
     }
+
+    public boolean isEntryOpen(RotationTrack track) {
+        if (track == null) return false;
+        long warnSeconds = settingsProvider.getSettings().getWarnMinutes() * 60L;
+        return track.getSecondsUntilNextCycle() > warnSeconds;
+    }
+
+    public boolean isEntryOpen(String trackId) {
+        return isEntryOpen(getTrackById(trackId));
+    }
 }

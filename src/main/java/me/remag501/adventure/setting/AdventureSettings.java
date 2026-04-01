@@ -21,6 +21,7 @@ public class AdventureSettings {
     private final int warnMinutes;
     private final String warnMessage;
     private final String newMapMessage;
+    private final String entryClosedMessage;
 
     // Penalty
     private final String penaltyMessage;
@@ -126,6 +127,7 @@ public class AdventureSettings {
         this.warnMinutes = config.getInt("broadcast.warn-minutes");
         this.warnMessage = color(config.getString("broadcast.warn-message"));
         this.newMapMessage = color(config.getString("broadcast.new-map-message"));
+        this.entryClosedMessage = color(config.getString("broadcast.entry-closed-message", "&cEntry is closed for this map."));
         this.penaltyMessage = color(config.getString("penalty.message"));
         this.penaltySound = config.getString("penalty.sound");
 
@@ -266,6 +268,10 @@ public class AdventureSettings {
 
     public String getNewMapMessage() {
         return newMapMessage;
+    }
+
+    public String getEntryClosedMessage() {
+        return entryClosedMessage;
     }
 
     public String getPenaltyMessage() {
