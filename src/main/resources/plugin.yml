@@ -8,6 +8,15 @@ commands:
   adventure:
     description: Teleport to the current adventure world
     usage: /adventure
+  chance:
+    description: Run one of multiple commands using weighted chances
+    usage: /chance <weight%"command",weight%"command",...>
+    permission: adventure.chance
+
+permissions:
+  adventure.chance:
+    description: Allows use of /chance
+    default: op
 
 depend:
   - BGSCore
