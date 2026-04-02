@@ -1,5 +1,6 @@
 package me.remag501.adventure.listener;
 
+import me.remag501.adventure.manager.ItemLimiterManager;
 import me.remag501.adventure.manager.PDCManager;
 import me.remag501.adventure.manager.RotationManager;
 import me.remag501.adventure.model.RotationTrack;
@@ -19,12 +20,14 @@ public class GuiListener {
     private final PDCManager pdcManager;
     private final NamespaceService namespaceService;
     private final SettingsProvider settingsProvider;
+    private final ItemLimiterManager itemLimiterManager;
 
-    public GuiListener(EventService eventService, NamespaceService namespaceService, PDCManager pdcManager, RotationManager rotationManager, SettingsProvider provider) {
+    public GuiListener(EventService eventService, NamespaceService namespaceService, PDCManager pdcManager, RotationManager rotationManager, SettingsProvider provider, ItemLimiterManager itemLimiterManager) {
         this.pdcManager = pdcManager;
         this.rotationManager = rotationManager;
         this.namespaceService = namespaceService;
         this.settingsProvider = provider;
+        this.itemLimiterManager = itemLimiterManager;
 
         eventService.subscribe(InventoryClickEvent.class)
                 // Filter: Only handle clicks in our specific GUI
@@ -56,6 +59,12 @@ public class GuiListener {
                     }
 
                     String currentWorld = rotationTrack.getCurrentWorld().getId();
+                    ItemLimiterManager.ItemLimitViolation violation = itemLimiterManager.getEntryViolation(player, currentWorld);
+                    if (violation != null) {
+                        player.sendMessage(itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation));
+                        player.closeInventory();
+                        break;
+                    }
 
                     // Teleport and Sync
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp player " + player.getName() + " " + currentWorld);

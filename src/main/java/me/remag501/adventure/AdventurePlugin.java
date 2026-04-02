@@ -2,9 +2,12 @@ package me.remag501.adventure;
 
 import me.remag501.adventure.command.AdventureCommand;
 import me.remag501.adventure.command.AdventureTabCompleter;
+import me.remag501.adventure.command.ChanceCommand;
+import me.remag501.adventure.command.ChanceTabCompleter;
 import me.remag501.adventure.listener.BroadcastListener;
 import me.remag501.adventure.listener.ExtractionListener;
 import me.remag501.adventure.listener.GuiListener;
+import me.remag501.adventure.listener.ItemLimiterListener;
 import me.remag501.adventure.listener.JoinListener;
 import me.remag501.adventure.manager.*;
 import me.remag501.adventure.placeholder.BGSExpansion;
@@ -34,6 +37,7 @@ public class AdventurePlugin extends JavaPlugin {
     private WorldBorderManager worldBorderManager;
     private BroadcastTask broadcastTask;
     private PDCManager pdcManager;
+    private ItemLimiterManager itemLimiterManager;
 
     private AdventureSettings settings;
     private SettingsProvider provider;
@@ -57,6 +61,7 @@ public class AdventurePlugin extends JavaPlugin {
         this.extractionManager = new ExtractionManager(provider);
         this.pdcManager = new PDCManager(namespaceService);
         this.rotationManager = new RotationManager(taskService, provider);
+        this.itemLimiterManager = new ItemLimiterManager(provider);
 
         // Managers that need Rotation (Workers)
         this.broadcastTask = new BroadcastTask(taskService, rotationManager, settings);
@@ -68,16 +73,19 @@ public class AdventurePlugin extends JavaPlugin {
         this.guiManager = new GuiManager(namespaceService, rotationManager, provider);
 
         // Register commands
-        AdventureCommand adventureCommand = new AdventureCommand(this, pdcManager, rotationManager, guiManager);
+        AdventureCommand adventureCommand = new AdventureCommand(this, pdcManager, rotationManager, guiManager, itemLimiterManager);
         getCommand("adventure").setExecutor(adventureCommand);
         getCommand("adventure").setTabCompleter(new AdventureTabCompleter(rotationManager));
+        getCommand("chance").setExecutor(new ChanceCommand());
+        getCommand("chance").setTabCompleter(new ChanceTabCompleter());
         commandService.registerSubcommand("adventure", adventureCommand);
 
         // Register Listener
         new ExtractionListener(eventService, taskService, extractionManager, rotationManager, provider);
         new JoinListener(eventService, pdcManager, rotationManager, penaltyManager);
-        new GuiListener(eventService, namespaceService, pdcManager, rotationManager, provider);
+        new GuiListener(eventService, namespaceService, pdcManager, rotationManager, provider, itemLimiterManager);
         new BroadcastListener(eventService, rotationManager);
+        new ItemLimiterListener(eventService, taskService, itemLimiterManager);
 
         // Start broadcasting messages
         penaltyManager.startBroadcastTask();
