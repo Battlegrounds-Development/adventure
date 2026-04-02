@@ -2,6 +2,7 @@ package me.remag501.adventure.command;
 
 import me.remag501.adventure.AdventurePlugin;
 import me.remag501.adventure.manager.GuiManager;
+import me.remag501.adventure.manager.ItemLimiterManager;
 import me.remag501.adventure.manager.PDCManager;
 import me.remag501.adventure.manager.RotationManager;
 import me.remag501.adventure.model.RotationTrack;
@@ -17,12 +18,14 @@ public class AdventureCommand implements CommandExecutor {
     private final PDCManager pdcManager;
     private final GuiManager guiManager;
     private final RotationManager rotationManager;
+    private final ItemLimiterManager itemLimiterManager;
 
-    public AdventureCommand(AdventurePlugin plugin, PDCManager pdcManager, RotationManager rotationManager, GuiManager guiManager) {
+    public AdventureCommand(AdventurePlugin plugin, PDCManager pdcManager, RotationManager rotationManager, GuiManager guiManager, ItemLimiterManager itemLimiterManager) {
         this.plugin = plugin;
         this.pdcManager = pdcManager;
         this.guiManager = guiManager;
         this.rotationManager = rotationManager;
+        this.itemLimiterManager = itemLimiterManager;
     }
 
     @Override
@@ -55,16 +58,33 @@ public class AdventureCommand implements CommandExecutor {
                 return true;
             }
 
+            Player target = Bukkit.getPlayer(playerName);
+            if (target == null) {
+                sender.sendMessage("Player not found or offline: " + playerName);
+                return true;
+            }
+
             // Block entry if outside entry window
             if (!rotationManager.isEntryOpen(track)) {
                 sender.sendMessage("Entry is closed for this track. Cannot teleport " + playerName + ".");
                 return true;
             }
 
-            // Handle teleport logic
             String currentWorld = track.getCurrentWorld().getId();
+            ItemLimiterManager.ItemLimitViolation violation = itemLimiterManager.getEntryViolation(target, currentWorld);
+            if (violation != null) {
+                String denied = itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation);
+                target.sendMessage(denied);
+                sender.sendMessage("Teleport blocked by item limiter for " + target.getName() + ".");
+                return true;
+            }
+
+            // Handle teleport logic
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp player " + playerName + " " + currentWorld);
-            pdcManager.syncPlayerToWorld(Bukkit.getPlayer(playerName), Bukkit.getWorld(currentWorld));
+            org.bukkit.World world = Bukkit.getWorld(currentWorld);
+            if (world != null) {
+                pdcManager.syncPlayerToWorld(target, world);
+            }
 
             sender.sendMessage("Attempting to teleport " + playerName + " to track: " + trackName);
 

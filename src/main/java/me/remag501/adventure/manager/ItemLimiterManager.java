@@ -19,6 +19,36 @@ public class ItemLimiterManager {
         this.settingsProvider = settingsProvider;
     }
 
+    public ItemLimitViolation getEntryViolation(Player player, String worldName) {
+        if (player == null || worldName == null) return null;
+        if (!settingsProvider.getSettings().isItemLimiterEnabled()) return null;
+
+        Map<String, Integer> limits = settingsProvider.getSettings().getItemLimitsForWorld(worldName);
+        if (limits.isEmpty()) return null;
+
+        for (Map.Entry<String, Integer> entry : limits.entrySet()) {
+            String materialName = entry.getKey();
+            int maxAllowed = Math.max(0, entry.getValue());
+            int current = countMaterial(player, materialName);
+
+            if (current > maxAllowed) {
+                return new ItemLimitViolation(materialName, maxAllowed, current);
+            }
+        }
+
+        return null;
+    }
+
+    public String formatEntryDeniedMessage(String worldName, ItemLimitViolation violation) {
+        if (violation == null) return "";
+
+        return MessageUtil.color(settingsProvider.getSettings().getItemLimiterEntryDeniedMessage()
+                .replace("%world%", worldName)
+                .replace("%item%", violation.materialName())
+                .replace("%max%", String.valueOf(violation.maxAllowed()))
+                .replace("%current%", String.valueOf(violation.currentAmount())));
+    }
+
     public void enforcePlayerLimits(Player player) {
         if (player == null || !player.isOnline()) return;
         if (!settingsProvider.getSettings().isItemLimiterEnabled()) return;
@@ -94,5 +124,6 @@ public class ItemLimiterManager {
         player.updateInventory();
         return removed;
     }
-}
 
+    public record ItemLimitViolation(String materialName, int maxAllowed, int currentAmount) {}
+}

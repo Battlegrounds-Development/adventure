@@ -71,7 +71,7 @@ public class AdventurePlugin extends JavaPlugin {
         this.guiManager = new GuiManager(namespaceService, rotationManager, provider);
 
         // Register commands
-        AdventureCommand adventureCommand = new AdventureCommand(this, pdcManager, rotationManager, guiManager);
+        AdventureCommand adventureCommand = new AdventureCommand(this, pdcManager, rotationManager, guiManager, itemLimiterManager);
         getCommand("adventure").setExecutor(adventureCommand);
         getCommand("adventure").setTabCompleter(new AdventureTabCompleter(rotationManager));
         commandService.registerSubcommand("adventure", adventureCommand);
@@ -79,7 +79,7 @@ public class AdventurePlugin extends JavaPlugin {
         // Register Listener
         new ExtractionListener(eventService, taskService, extractionManager, rotationManager, provider);
         new JoinListener(eventService, pdcManager, rotationManager, penaltyManager);
-        new GuiListener(eventService, namespaceService, pdcManager, rotationManager, provider);
+        new GuiListener(eventService, namespaceService, pdcManager, rotationManager, provider, itemLimiterManager);
         new BroadcastListener(eventService, rotationManager);
         new ItemLimiterListener(eventService, taskService, itemLimiterManager);
 

@@ -87,6 +87,7 @@ world-border:
 item-limiter:
   enabled: true
   message: "&cYou can only hold &f%max% &c%item% in this world. Dropped &f%dropped%&c."
+  entry-denied-message: "&cCannot enter &f%world%&c. You have &f%current% %item%&c, max is &f%max%&c."
   worlds:
     kuroko:
       COBWEB: 8

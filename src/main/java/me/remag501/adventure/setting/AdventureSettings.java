@@ -74,6 +74,7 @@ public class AdventureSettings {
     // Item limiter
     private final boolean itemLimiterEnabled;
     private final String itemLimiterMessage;
+    private final String itemLimiterEntryDeniedMessage;
     private final Map<String, Map<String, Integer>> itemLimitsByWorld = new HashMap<>();
 
     public AdventureSettings(FileConfiguration config) {
@@ -217,6 +218,10 @@ public class AdventureSettings {
         // --- Item Limiter ---
         this.itemLimiterEnabled = config.getBoolean("item-limiter.enabled", false);
         this.itemLimiterMessage = color(config.getString("item-limiter.message", "&cYou can only hold &f%max% &c%item% here. Dropped &f%dropped%&c."));
+        this.itemLimiterEntryDeniedMessage = color(config.getString(
+                "item-limiter.entry-denied-message",
+                "&cCannot enter &f%world%&c. You have &f%current% %item%&c, max is &f%max%&c."
+        ));
 
         ConfigurationSection itemLimiterWorlds = config.getConfigurationSection("item-limiter.worlds");
         if (itemLimiterWorlds != null) {
@@ -448,6 +453,10 @@ public class AdventureSettings {
 
     public String getItemLimiterMessage() {
         return itemLimiterMessage;
+    }
+
+    public String getItemLimiterEntryDeniedMessage() {
+        return itemLimiterEntryDeniedMessage;
     }
 
     public Map<String, Integer> getItemLimitsForWorld(String worldName) {
