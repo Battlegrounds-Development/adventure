@@ -71,6 +71,11 @@ public class AdventureSettings {
     private final String worldBorderMoveMessage;
     private final String worldBorderFinalPushMessage;
 
+    // Item limiter
+    private final boolean itemLimiterEnabled;
+    private final String itemLimiterMessage;
+    private final Map<String, Map<String, Integer>> itemLimitsByWorld = new HashMap<>();
+
     public AdventureSettings(FileConfiguration config) {
         // --- Rotation ---
         ConfigurationSection rotationSec = config.getConfigurationSection("rotation");
@@ -208,6 +213,29 @@ public class AdventureSettings {
         this.worldBorderWarningMessage = color(config.getString("world-border.warning-message", "&e[Adventure] Border starts moving in &c%seconds%s &ein &e%map%&e."));
         this.worldBorderMoveMessage = color(config.getString("world-border.move-message", "&6[Adventure] Border is moving in &e%map%&6."));
         this.worldBorderFinalPushMessage = color(config.getString("world-border.final-push-message", "&c[Adventure] Final collapse has started in &e%map%&c!"));
+
+        // --- Item Limiter ---
+        this.itemLimiterEnabled = config.getBoolean("item-limiter.enabled", false);
+        this.itemLimiterMessage = color(config.getString("item-limiter.message", "&cYou can only hold &f%max% &c%item% here. Dropped &f%dropped%&c."));
+
+        ConfigurationSection itemLimiterWorlds = config.getConfigurationSection("item-limiter.worlds");
+        if (itemLimiterWorlds != null) {
+            for (String worldName : itemLimiterWorlds.getKeys(false)) {
+                ConfigurationSection worldSection = itemLimiterWorlds.getConfigurationSection(worldName);
+                if (worldSection == null) continue;
+
+                Map<String, Integer> limits = new HashMap<>();
+                for (String material : worldSection.getKeys(false)) {
+                    int limit = worldSection.getInt(material, -1);
+                    if (limit < 0) continue;
+                    limits.put(material.toUpperCase(Locale.ROOT), limit);
+                }
+
+                if (!limits.isEmpty()) {
+                    itemLimitsByWorld.put(worldName, limits);
+                }
+            }
+        }
     }
 
     private ExtractionZone parseZone(String worldName, Map<?, ?> map) {
@@ -412,6 +440,18 @@ public class AdventureSettings {
 
     public String getWorldBorderFinalPushMessage() {
         return worldBorderFinalPushMessage;
+    }
+
+    public boolean isItemLimiterEnabled() {
+        return itemLimiterEnabled;
+    }
+
+    public String getItemLimiterMessage() {
+        return itemLimiterMessage;
+    }
+
+    public Map<String, Integer> getItemLimitsForWorld(String worldName) {
+        return itemLimitsByWorld.getOrDefault(worldName, Collections.emptyMap());
     }
 
 }

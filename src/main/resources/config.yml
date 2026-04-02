@@ -84,6 +84,13 @@ world-border:
   move-message: "&6[Adventure] Border is moving in &e%map%&6."
   final-push-message: "&c[Adventure] Final border collapse has started in &e%map%&c!"
 
+item-limiter:
+  enabled: true
+  message: "&cYou can only hold &f%max% &c%item% in this world. Dropped &f%dropped%&c."
+  worlds:
+    kuroko:
+      COBWEB: 8
+
 extraction:
   duration: 5 # seconds to stand in zone
   portal-open-seconds: 5
