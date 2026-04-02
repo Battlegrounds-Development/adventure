@@ -233,7 +233,7 @@ public class AdventureSettings {
                 for (String material : worldSection.getKeys(false)) {
                     int limit = worldSection.getInt(material, -1);
                     if (limit < 0) continue;
-                    limits.put(material.toUpperCase(Locale.ROOT), limit);
+                    limits.put(material.trim(), limit);
                 }
 
                 if (!limits.isEmpty()) {

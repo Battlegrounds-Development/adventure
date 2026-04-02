@@ -14,3 +14,7 @@ depend:
   - Multiverse-Core
   - BetterRTP
   - PlaceholderAPI
+
+softdepend:
+  - Oraxen
+

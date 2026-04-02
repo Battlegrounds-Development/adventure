@@ -90,7 +90,8 @@ item-limiter:
   entry-denied-message: "&cCannot enter &f%world%&c. You have &f%current% %item%&c, max is &f%max%&c."
   worlds:
     kuroko:
-      COBWEB: 8
+      "minecraft:cobweb": 8
+      "oraxen:bandage": 5
 
 extraction:
   duration: 5 # seconds to stand in zone

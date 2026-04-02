@@ -2,11 +2,13 @@ package me.remag501.adventure.manager;
 
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.Map;
 public class ItemLimiterManager {
 
     private final SettingsProvider settingsProvider;
+    private boolean oraxenLookupInitialized;
+    private Method getIdByItemMethod;
 
     public ItemLimiterManager(SettingsProvider settingsProvider) {
         this.settingsProvider = settingsProvider;
@@ -27,12 +31,12 @@ public class ItemLimiterManager {
         if (limits.isEmpty()) return null;
 
         for (Map.Entry<String, Integer> entry : limits.entrySet()) {
-            String materialName = entry.getKey();
+            String ruleKey = entry.getKey();
             int maxAllowed = Math.max(0, entry.getValue());
-            int current = countMaterial(player, materialName);
+            int current = countMatching(player, ruleKey);
 
             if (current > maxAllowed) {
-                return new ItemLimitViolation(materialName, maxAllowed, current);
+                return new ItemLimitViolation(ruleKey, maxAllowed, current);
             }
         }
 
@@ -44,7 +48,7 @@ public class ItemLimiterManager {
 
         return MessageUtil.color(settingsProvider.getSettings().getItemLimiterEntryDeniedMessage()
                 .replace("%world%", worldName)
-                .replace("%item%", violation.materialName())
+                .replace("%item%", violation.itemKey())
                 .replace("%max%", String.valueOf(violation.maxAllowed()))
                 .replace("%current%", String.valueOf(violation.currentAmount())));
     }
@@ -58,14 +62,14 @@ public class ItemLimiterManager {
         if (limits.isEmpty()) return;
 
         for (Map.Entry<String, Integer> entry : limits.entrySet()) {
-            String materialName = entry.getKey();
+            String ruleKey = entry.getKey();
             int maxAllowed = Math.max(0, entry.getValue());
 
-            int totalAmount = countMaterial(player, materialName);
+            int totalAmount = countMatching(player, ruleKey);
             if (totalAmount <= maxAllowed) continue;
 
             int overflow = totalAmount - maxAllowed;
-            List<ItemStack> removed = removeOverflow(player, materialName, overflow);
+            List<ItemStack> removed = removeOverflow(player, ruleKey, overflow);
 
             for (ItemStack stack : removed) {
                 Item dropped = world.dropItemNaturally(player.getLocation(), stack);
@@ -73,7 +77,7 @@ public class ItemLimiterManager {
             }
 
             String message = settingsProvider.getSettings().getItemLimiterMessage()
-                    .replace("%item%", materialName)
+                    .replace("%item%", ruleKey)
                     .replace("%max%", String.valueOf(maxAllowed))
                     .replace("%dropped%", String.valueOf(overflow));
 
@@ -81,19 +85,18 @@ public class ItemLimiterManager {
         }
     }
 
-    private int countMaterial(Player player, String materialName) {
+    private int countMatching(Player player, String ruleKey) {
         int total = 0;
-
         for (ItemStack stack : player.getInventory().getContents()) {
             if (stack == null) continue;
-            if (!stack.getType().name().equalsIgnoreCase(materialName)) continue;
-            total += stack.getAmount();
+            if (matchesRule(stack, ruleKey)) {
+                total += stack.getAmount();
+            }
         }
-
         return total;
     }
 
-    private List<ItemStack> removeOverflow(Player player, String materialName, int overflow) {
+    private List<ItemStack> removeOverflow(Player player, String ruleKey, int overflow) {
         List<ItemStack> removed = new ArrayList<>();
         if (overflow <= 0) return removed;
 
@@ -102,7 +105,7 @@ public class ItemLimiterManager {
         for (int i = 0; i < contents.length && overflow > 0; i++) {
             ItemStack stack = contents[i];
             if (stack == null) continue;
-            if (!stack.getType().name().equalsIgnoreCase(materialName)) continue;
+            if (!matchesRule(stack, ruleKey)) continue;
 
             int amountToTake = Math.min(stack.getAmount(), overflow);
             overflow -= amountToTake;
@@ -125,5 +128,61 @@ public class ItemLimiterManager {
         return removed;
     }
 
-    public record ItemLimitViolation(String materialName, int maxAllowed, int currentAmount) {}
+    private boolean matchesRule(ItemStack stack, String rawRuleKey) {
+        if (rawRuleKey == null || rawRuleKey.isBlank()) return false;
+
+        String ruleKey = rawRuleKey.trim();
+        int separator = ruleKey.indexOf(':');
+
+        // Legacy support: COBWEB, DIAMOND_SWORD, etc.
+        if (separator < 0) {
+            return stack.getType().name().equalsIgnoreCase(ruleKey);
+        }
+
+        String namespace = ruleKey.substring(0, separator).toLowerCase();
+        String value = ruleKey.substring(separator + 1);
+
+        if ("minecraft".equals(namespace)) {
+            return stack.getType().getKey().toString().equalsIgnoreCase("minecraft:" + value);
+        }
+
+        if ("oraxen".equals(namespace)) {
+            String oraxenId = getOraxenItemId(stack);
+            return oraxenId != null && oraxenId.equalsIgnoreCase(value);
+        }
+
+        return false;
+    }
+
+    private String getOraxenItemId(ItemStack stack) {
+        Method method = resolveOraxenMethod();
+        if (method == null || stack == null) return null;
+
+        try {
+            Object result = method.invoke(null, stack);
+            return result instanceof String ? (String) result : null;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private Method resolveOraxenMethod() {
+        if (oraxenLookupInitialized) return getIdByItemMethod;
+        oraxenLookupInitialized = true;
+
+        if (Bukkit.getPluginManager().getPlugin("Oraxen") == null) {
+            return null;
+        }
+
+        try {
+            Class<?> oraxenItems = Class.forName("io.th0rgal.oraxen.api.OraxenItems");
+            getIdByItemMethod = oraxenItems.getMethod("getIdByItem", ItemStack.class);
+        } catch (Exception ignored) {
+            getIdByItemMethod = null;
+        }
+
+        return getIdByItemMethod;
+    }
+
+    public record ItemLimitViolation(String itemKey, int maxAllowed, int currentAmount) {}
 }
