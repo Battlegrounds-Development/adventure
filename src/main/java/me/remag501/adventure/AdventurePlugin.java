@@ -3,6 +3,7 @@ package me.remag501.adventure;
 import me.remag501.adventure.command.AdventureCommand;
 import me.remag501.adventure.command.AdventureTabCompleter;
 import me.remag501.adventure.command.ChanceCommand;
+import me.remag501.adventure.command.ChanceTabCompleter;
 import me.remag501.adventure.listener.BroadcastListener;
 import me.remag501.adventure.listener.ExtractionListener;
 import me.remag501.adventure.listener.GuiListener;
@@ -76,6 +77,7 @@ public class AdventurePlugin extends JavaPlugin {
         getCommand("adventure").setExecutor(adventureCommand);
         getCommand("adventure").setTabCompleter(new AdventureTabCompleter(rotationManager));
         getCommand("chance").setExecutor(new ChanceCommand());
+        getCommand("chance").setTabCompleter(new ChanceTabCompleter());
         commandService.registerSubcommand("adventure", adventureCommand);
 
         // Register Listener
