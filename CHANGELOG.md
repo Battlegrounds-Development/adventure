@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0](https://github.com/Battlegrounds-Development/adventure/compare/v1.2.0...v2.0.0) (2026-04-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* added feature item limiter and chance command
+
+### feat
+
+* added feature item limiter and chance command ([6b1e4cc](https://github.com/Battlegrounds-Development/adventure/commit/6b1e4cc33bf08e31459583157fc67c8c77c9508c))
+
 ## [1.2.0](https://github.com/Battlegrounds-Development/adventure/compare/v1.1.1...v1.2.0) (2026-04-01)
 
 ## [1.1.1](https://github.com/Battlegrounds-Development/adventure/compare/v1.1.0...v1.1.1) (2026-03-27)
