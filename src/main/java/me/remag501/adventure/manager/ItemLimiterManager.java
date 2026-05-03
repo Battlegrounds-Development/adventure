@@ -1,14 +1,14 @@
 package me.remag501.adventure.manager;
 
+import me.remag501.adventure.model.ItemLimitViolation;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
-import org.bukkit.Bukkit;
+import me.remag501.core.api.oraxen.OraxenService;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +16,11 @@ import java.util.Map;
 public class ItemLimiterManager {
 
     private final SettingsProvider settingsProvider;
-    private boolean oraxenLookupInitialized;
-    private Method getIdByItemMethod;
+    private final OraxenService oraxenService;
 
-    public ItemLimiterManager(SettingsProvider settingsProvider) {
+    public ItemLimiterManager(SettingsProvider settingsProvider, OraxenService oraxenService) {
         this.settingsProvider = settingsProvider;
+        this.oraxenService = oraxenService;
     }
 
     public ItemLimitViolation getEntryViolation(Player player, String worldName) {
@@ -147,42 +147,11 @@ public class ItemLimiterManager {
         }
 
         if ("oraxen".equals(namespace)) {
-            String oraxenId = getOraxenItemId(stack);
+            String oraxenId = oraxenService.getId(stack);
             return oraxenId != null && oraxenId.equalsIgnoreCase(value);
         }
 
         return false;
     }
 
-    private String getOraxenItemId(ItemStack stack) {
-        Method method = resolveOraxenMethod();
-        if (method == null || stack == null) return null;
-
-        try {
-            Object result = method.invoke(null, stack);
-            return result instanceof String ? (String) result : null;
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
-
-    private Method resolveOraxenMethod() {
-        if (oraxenLookupInitialized) return getIdByItemMethod;
-        oraxenLookupInitialized = true;
-
-        if (Bukkit.getPluginManager().getPlugin("Oraxen") == null) {
-            return null;
-        }
-
-        try {
-            Class<?> oraxenItems = Class.forName("io.th0rgal.oraxen.api.OraxenItems");
-            getIdByItemMethod = oraxenItems.getMethod("getIdByItem", ItemStack.class);
-        } catch (Exception ignored) {
-            getIdByItemMethod = null;
-        }
-
-        return getIdByItemMethod;
-    }
-
-    public record ItemLimitViolation(String itemKey, int maxAllowed, int currentAmount) {}
 }

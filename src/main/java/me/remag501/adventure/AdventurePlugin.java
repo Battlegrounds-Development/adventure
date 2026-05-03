@@ -18,6 +18,7 @@ import me.remag501.core.api.BGSApi;
 import me.remag501.core.api.command.CommandService;
 import me.remag501.core.api.event.EventService;
 import me.remag501.core.api.namespace.NamespaceService;
+import me.remag501.core.api.oraxen.OraxenService;
 import me.remag501.core.api.task.TaskService;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,13 +56,14 @@ public class AdventurePlugin extends JavaPlugin {
         TaskService taskService = BGSApi.tasks();
         NamespaceService namespaceService = BGSApi.namespaces();
         CommandService commandService = BGSApi.commands();
+        OraxenService oraxenService = BGSApi.oraxen();
 
         // Initialize managers
         // Independent Managers (Leaves)
         this.extractionManager = new ExtractionManager(provider);
         this.pdcManager = new PDCManager(namespaceService);
         this.rotationManager = new RotationManager(taskService, provider);
-        this.itemLimiterManager = new ItemLimiterManager(provider);
+        this.itemLimiterManager = new ItemLimiterManager(provider, oraxenService);
 
         // Managers that need Rotation (Workers)
         this.broadcastTask = new BroadcastTask(taskService, rotationManager, settings);

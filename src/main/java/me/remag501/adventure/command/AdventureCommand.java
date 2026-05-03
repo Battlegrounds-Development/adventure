@@ -5,6 +5,7 @@ import me.remag501.adventure.manager.GuiManager;
 import me.remag501.adventure.manager.ItemLimiterManager;
 import me.remag501.adventure.manager.PDCManager;
 import me.remag501.adventure.manager.RotationManager;
+import me.remag501.adventure.model.ItemLimitViolation;
 import me.remag501.adventure.model.RotationTrack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -71,7 +72,7 @@ public class AdventureCommand implements CommandExecutor {
             }
 
             String currentWorld = track.getCurrentWorld().getId();
-            ItemLimiterManager.ItemLimitViolation violation = itemLimiterManager.getEntryViolation(target, currentWorld);
+            ItemLimitViolation violation = itemLimiterManager.getEntryViolation(target, currentWorld);
             if (violation != null) {
                 String denied = itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation);
                 target.sendMessage(denied);

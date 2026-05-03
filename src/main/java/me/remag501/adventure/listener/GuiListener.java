@@ -3,6 +3,7 @@ package me.remag501.adventure.listener;
 import me.remag501.adventure.manager.ItemLimiterManager;
 import me.remag501.adventure.manager.PDCManager;
 import me.remag501.adventure.manager.RotationManager;
+import me.remag501.adventure.model.ItemLimitViolation;
 import me.remag501.adventure.model.RotationTrack;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
@@ -59,7 +60,7 @@ public class GuiListener {
                     }
 
                     String currentWorld = rotationTrack.getCurrentWorld().getId();
-                    ItemLimiterManager.ItemLimitViolation violation = itemLimiterManager.getEntryViolation(player, currentWorld);
+                    ItemLimitViolation violation = itemLimiterManager.getEntryViolation(player, currentWorld);
                     if (violation != null) {
                         player.sendMessage(itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation));
                         player.closeInventory();
