@@ -72,9 +72,10 @@ public class AdventureCommand implements CommandExecutor {
             }
 
             String currentWorld = track.getCurrentWorld().getId();
+            String worldDisplayName = track.getCurrentWorld().getChatName();
             ItemLimitViolation violation = itemLimiterManager.getEntryViolation(target, currentWorld);
             if (violation != null) {
-                String denied = itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation);
+                String denied = itemLimiterManager.formatEntryDeniedMessage(worldDisplayName, violation);
                 target.sendMessage(denied);
                 sender.sendMessage("Teleport blocked by item limiter for " + target.getName() + ".");
                 return true;

@@ -60,9 +60,10 @@ public class GuiListener {
                     }
 
                     String currentWorld = rotationTrack.getCurrentWorld().getId();
+                    String worldDisplayName = rotationTrack.getCurrentWorld().getChatName();
                     ItemLimitViolation violation = itemLimiterManager.getEntryViolation(player, currentWorld);
                     if (violation != null) {
-                        player.sendMessage(itemLimiterManager.formatEntryDeniedMessage(currentWorld, violation));
+                        player.sendMessage(itemLimiterManager.formatEntryDeniedMessage(worldDisplayName, violation));
                         player.closeInventory();
                         break;
                     }

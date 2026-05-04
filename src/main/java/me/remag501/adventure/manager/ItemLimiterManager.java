@@ -4,10 +4,13 @@ import me.remag501.adventure.model.ItemLimitViolation;
 import me.remag501.adventure.setting.SettingsProvider;
 import me.remag501.adventure.util.MessageUtil;
 import me.remag501.core.api.oraxen.OraxenService;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,8 @@ public class ItemLimiterManager {
             int current = countMatching(player, ruleKey);
 
             if (current > maxAllowed) {
-                return new ItemLimitViolation(ruleKey, maxAllowed, current);
+                String displayName = getDisplayNameForRule(player, ruleKey);
+                return new ItemLimitViolation(displayName, maxAllowed, current);
             }
         }
 
@@ -77,7 +81,7 @@ public class ItemLimiterManager {
             }
 
             String message = settingsProvider.getSettings().getItemLimiterMessage()
-                    .replace("%item%", ruleKey)
+                    .replace("%item%", getDisplayNameForRule(player, ruleKey))
                     .replace("%max%", String.valueOf(maxAllowed))
                     .replace("%dropped%", String.valueOf(overflow));
 
@@ -94,6 +98,38 @@ public class ItemLimiterManager {
             }
         }
         return total;
+    }
+
+    private String getDisplayNameForRule(Player player, String ruleKey) {
+        for (ItemStack stack : player.getInventory().getContents()) {
+            if (stack == null || stack.getType().isAir()) continue;
+
+            if (matchesRule(stack, ruleKey)) {
+                ItemMeta meta = stack.getItemMeta();
+
+                // Check for oraxen
+                String oraxenId = oraxenService.getId(stack);
+                if (oraxenId != null) {
+                    String oraxenName = oraxenService.getItemDisplayName(oraxenId);
+                    if (oraxenName != null) {
+                        // PARSE THE MINIMESSAGE GRADIENT INTO PLAIN TEXT
+                        return net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText()
+                                .serialize(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(oraxenName));
+                    }
+                }
+
+                // Check if it has a custom display name
+                if (meta != null && meta.hasDisplayName()) {
+                    // Use MiniMessage or Legacy serializer if you want to keep colors
+                    // Or PlainText if you just want the words
+                    return PlainTextComponentSerializer.plainText().serialize(meta.displayName());
+                }
+
+                // Fallback to the localized material name (e.g., "Diamond Sword" instead of "DIAMOND_SWORD")
+                return stack.getType().name().replace("_", " ").toLowerCase();
+            }
+        }
+        return "";
     }
 
     private List<ItemStack> removeOverflow(Player player, String ruleKey, int overflow) {
